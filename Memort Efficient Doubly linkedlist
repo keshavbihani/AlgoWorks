@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+#include <stdint.h>
+using namespace std;
+
+//structure of Node 
+struct Node
+{
+	int data;
+	struct Node* xoradd; 
+};
+
+//creation of newnode
+struct Node *newnode(int val)
+{
+    struct Node *temp=(struct Node*)malloc(sizeof(struct Node));
+    temp->data=val;
+    temp->xoradd=NULL;
+    return temp;
+}
+//xor of 2 addresses
+struct Node *funcxor(struct Node *a,struct Node *b)
+{
+    return (struct Node*)((uintptr_t)a ^ (uintptr_t)b);
+}
+
+//insertion of newnode with new element on top
+void insert(struct Node **head,int val)
+{   
+    struct Node *newone=newnode(val);
+    newone->xoradd=funcxor(*head,NULL);
+     
+    if(*head!=NULL)
+    {
+        
+        (*head)->xoradd=funcxor(newone,funcxor((*head)->xoradd,NULL));
+        
+    }
+    *head=newone;
+        
+}
+
+//forward traversing of Dll
+void printList(struct Node *head)
+{
+    struct Node *traverse=head;
+    struct Node *prev=NULL;
+    struct Node*temp=NULL;
+    //forward traverse
+    while(traverse)
+    {
+        cout<<traverse->data<<" ";
+        temp=traverse;
+        traverse=funcxor(prev,traverse->xoradd);
+        prev=temp;
+    }
+
+}
+
+int main ()
+{
+	
+	struct Node *head = NULL;
+	insert(&head, 12);
+	insert(&head, 25);
+	insert(&head, 4);
+	insert(&head, 54);
+
+	// print the created list
+	printList (head);
+
+	return (0);
+}
